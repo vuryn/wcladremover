@@ -47,6 +47,10 @@ class Client:
     def version(self):
         return self.url.split('/')[-2].strip().lstrip('v')
 
+    @property
+    def version_tuple(self):
+        return tuple(map(int, self.version.split('.')))
+
 
 class WCLClient:
     def __init__(self):
@@ -96,7 +100,11 @@ def main():
     os.system("""cd squashfs-root/resources && npx asar extract app.asar extracted_folder """)
 
     # Disable ad service by providing empty stub
-    ad_service = """class AdService { ensureAdIsLoaded(){/**/} showAd(){/**/} hideAd(){/**/} }\nmodule.exports = { AdService }"""
+    if linux_client.version_tuple < (5, 9, 0):
+        ad_service = """class AdService { ensureAdIsLoaded(){/**/} showAd(){/**/} hideAd(){/**/} }\nmodule.exports = { AdService }"""
+    else:
+        with open('ad-service-stub-since-5.9.0.js', 'r') as f:
+            ad_service = f.read()
     with open("/app/squashfs-root/resources/extracted_folder/scripts/services/ad-service.js", 'w+') as f:
         f.write(ad_service)
 
