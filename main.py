@@ -50,7 +50,7 @@ class Client:
 
 class WCLClient:
     def __init__(self):
-        self.clients = self.get_current_WCL_version_url()
+        self.os_name_to_client = self.get_current_WCL_version_url()
 
     def get_current_WCL_version_url(self):
         session = HTMLSession()
@@ -65,7 +65,7 @@ class WCLClient:
         return output
 
     def get_client(self, os: WCLOS):
-        return self.clients[os.os_name]
+        return self.os_name_to_client[os.os_name]
 
 
 def main():
@@ -111,6 +111,7 @@ def main():
     # Rename to correct version and move
     os.system(f"""mv ./Warcraft* ./Warcraft-Logs-Uploader-{linux_client.version}.AppImage""")
     os.system("""(mkdir /output || true) && cp ./Warcraft* /output """)
+    os.system(f"""cp ./Warcraft-Logs-Uploader-{linux_client.version}.AppImage /output/Warcraft-Logs-Uploader-latest.AppImage""")
 
 
 if __name__ == '__main__':
